@@ -7,11 +7,6 @@ function build_image () {
       && docker push ${image_name}:${tag}
 }
 
-function get-firefox-version () {
-  html=$(curl --silent -L "http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/latest/linux-x86_64/en-US/")
-  echo "$html" | grep -Eo '[0-9.]+.tar.bz2' | sed -e 's/\.tar\.bz2//g' | head -n 1
-}
-
 function get-chrome-version () {
   headers=$(curl --silent -LI "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb")
   echo "$headers" | grep Last-Modified | sed -e 's/Last-Modified: //'
@@ -21,17 +16,15 @@ function get-chromedriver-version () {
   curl --silent -L http://chromedriver.storage.googleapis.com/LATEST_RELEASE | xargs
 }
 
-FIREFOX_VERSION=$(get-firefox-version)
 CHROME_VERSION=$(get-chrome-version)
 CHROMEDRIVER_VERSION=$(get-chromedriver-version)
 
 #exit 1
 
 sed -E \
-    -e "s/ENV FIREFOX_VERSION .+/ENV FIREFOX_VERSION ${FIREFOX_VERSION}/" \
     -e "s/ENV GOOGLE_CHROME_DATE .+/ENV GOOGLE_CHROME_DATE ${CHROME_VERSION}/" \
     -e "s/ENV CHROMEDRIVER_VERSION .+/ENV CHROMEDRIVER_VERSION ${CHROMEDRIVER_VERSION}/" \
     Dockerfile > Dockerfile-build
 
 #cp Dockerfile Dockerfile-build
-build_image mikewhy/selenium-cucumber
+build_image turistpro/selenium-cucumber
