@@ -4,13 +4,20 @@ MAIN_PID=-2
 XVFB_PID=-2
 AVCONV_PID=-2
 DISABLE_XVFB=${DISABLE_XVFB:-0}
-DISABLE_VIDEO=${DISABLE_VIDEO:-0}
+ENABLE_VIDEO=${DISABLE_VIDEO:-0}
 
 # Set the default video name
 VIDEO_NAME=${VIDEO_NAME:-}
 if [ -z ${VIDEO_NAME} ]; then
   date=$(date -u "+%Y-%m-%d--%H:%M:%S")
   VIDEO_NAME="${BROWSER}-${date}"
+fi
+
+# Git clone
+GIT_URL=${GIT_URL:-}
+if [ ! -z ${GIT_URL} ]; then
+   rm -rf /app-tests/*
+   git clone ${GIT_URL} /app-tests
 fi
 
 function main () {
@@ -23,7 +30,7 @@ function main () {
     exec "$@"
   else
     start-xvfb
-    if [ ! $DISABLE_VIDEO == 1 ]; then
+    if [ $ENABLE_VIDEO == 1 ]; then
       start-avconv
     fi
 
